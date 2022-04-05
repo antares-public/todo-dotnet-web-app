@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const Counter = () => {
-  const [counter, setCounter] = useState(0)
+  const [count, setCount] = useState(0)
 
   return (
     <div>
@@ -9,9 +9,9 @@ export const Counter = () => {
 
       <p>This is a simple example of a React component.</p>
 
-      <p aria-live="polite">Current count: <strong>{counter}</strong></p>
+      <p aria-live="polite">Current count: <strong>{count}</strong></p>
 
-      <button className="btn btn-primary" onClick={() => setCounter((prev) => prev++)}>Increment</button>
+      <button className="btn btn-primary" onClick={() => setCount(count + 1)}>Increment</button>
     </div>
   );
 }
