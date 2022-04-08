@@ -1,16 +1,21 @@
-import React from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { Todo } from './components/Todo';
-
-import './custom.css'
+import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
+import { AboutPage } from "./pages/AboutPage";
+import { TodosPage } from "./pages/TodosPage";
 
 const App: React.FC = () => {
-  return <Layout>
-    <Route exact path='/' component={Home} />
-    <Route path='/todo' component={Todo} />
-  </Layout>
-}
+  return (
+    <BrowserRouter>
+      <Navbar />
+      <div className="container">
+        <Switch>
+          <Route component={TodosPage} path="/todo-typescript" exact />
+          <Route component={AboutPage} path="/about" />
+        </Switch>
+      </div>
+    </BrowserRouter>
+  );
+};
 
 export default App;
