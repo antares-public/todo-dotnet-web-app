@@ -1,49 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ITodo } from "./../interfaces";
 import { ToDoForm } from "./../components/TodoForm";
 import { TodoList } from "./../components/TodoList";
+import { useHttp } from "../hook/http.hook";
+import { catchDeleteTaskHandler } from "../lib/catch";
 
 declare var confirm: (question: string) => boolean;
 
 export const TodosPage: React.FC = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("todos") || "[]") as ITodo[];
-
-    setTodos(saved);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+  const [error, setError] = useState('')
+  const { request } = useHttp()
 
   const addHandler = (title: string) => {
-    const newTodo: ITodo = {
-      title: title,
-      id: Date.now(),
-      completed: false,
-    };
-    setTodos((prev) => [newTodo, ...prev]);
+    if (title) {
+      request('tasks', 'POST', {
+        title,
+        completed: false,
+      }).then((todo) => setTodos((prev) => [todo, ...prev]))
+    }
   };
 
   const toggleHandler = (id: number) => {
-    setTodos((prev) =>
+    const task = todos.find((task) => task._id === id)
+    request(`tasks/${id}`, 'PUT', {
+      title: task!.title,
+      completed: !task!.completed,
+    }).then(() => setTodos((prev) =>
       prev.map((todo) => {
-        if (todo.id === id) {
+        if (todo._id === id) {
           todo.completed = !todo.completed;
         }
         return todo;
       })
-    );
+    ))
   };
 
   const removeHandler = (id: number) => {
     const shouldRemove = confirm("Are you sure you want to remove?");
     if (shouldRemove) {
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      const task = todos.find((e) => e._id === id)
+      setTodos((prev) => prev.filter((t) => t !== task))
+      request(`tasks/${id}`, 'DELETE').catch(() => catchDeleteTaskHandler({
+        task: task!,
+        updateTodos: setTodos,
+        updateError: setError
+      }))
     }
   };
+
+  useEffect(() => {
+    request('tasks').then((tasks) => setTodos(tasks));
+  }, [])
+
   return (
     <>
       <ToDoForm onAdd={addHandler} />
@@ -53,6 +62,8 @@ export const TodosPage: React.FC = () => {
         onToggle={toggleHandler}
         onRemove={removeHandler}
       />
+
+      {error && <p>{error}</p>}
     </>
   );
 };

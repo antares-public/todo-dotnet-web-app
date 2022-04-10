@@ -11,7 +11,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   todos,
   onToggle,
   onRemove,
-}: any) => {
+}) => {
   if (todos.length === 0) {
     return <p className="center">Create your first todo</p>;
   }
@@ -22,24 +22,24 @@ export const TodoList: React.FC<TodoListProps> = ({
   };
   return (
     <ul>
-      {todos.map((todo: any) => {
+      {todos.map((todo: ITodo) => {
         const classes = ["todo"];
 
         if (todo.completed) {
           classes.push("complited");
         }
         return (
-          <li className={classes.join(" ")} key={todo.id}>
+          <li className={classes.join(" ")} key={todo._id}>
             <label>
               <input
                 type="checkbox"
                 checked={todo.completed}
-                onChange={onToggle.bind(null, todo.id)}
+                onChange={onToggle.bind(null, todo._id)}
               />
               <span>{todo.title}</span>
               <i
                 className="material-icons red-text"
-                onClick={(event) => removHandler(event, todo.id)}
+                onClick={(event) => removHandler(event, todo._id)}
               >
                 delete
               </i>

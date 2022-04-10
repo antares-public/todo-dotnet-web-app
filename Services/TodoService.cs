@@ -8,6 +8,7 @@ public class TodoService
     {
         var mongoClient = new MongoClient(options.Value.ConnectionString);
 
+
         _tasks = mongoClient
             .GetDatabase(options.Value.DatabaseName)
             .GetCollection<Todo>(options.Value.CollectionName);

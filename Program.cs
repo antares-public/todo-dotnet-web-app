@@ -1,14 +1,19 @@
 var builder = WebApplication.CreateBuilder(args);
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        // var playlistCollection = mongoClient.GetDatabase(options.Value.DatabaseName)
+
 
 builder.Services.AddCors(options =>
 {
-  options.AddPolicy(name: MyAllowSpecificOrigins,
-                    policy =>
-                    {
-                      policy.WithOrigins("https://localhost:44464");
-                    });
+  options.AddPolicy("MyCorsPolicy",
+       builder => builder
+          .SetIsOriginAllowedToAllowWildcardSubdomains()
+          .WithOrigins("https://localhost:44464")
+          .AllowAnyMethod()
+          .AllowCredentials()
+          .AllowAnyHeader()
+          .Build()
+       );
 });
 
 RegisterServices(builder.Services);
@@ -56,7 +61,7 @@ void ConfigureApp(WebApplication app)
 
   app.MapControllers();
 
-  app.UseCors(MyAllowSpecificOrigins);
+  app.UseCors("MyCorsPolicy");
 
   app.MapGet("/api/tasks", async (TodoService service)
       => await service.GetAll());
@@ -81,7 +86,7 @@ void ConfigureApp(WebApplication app)
 
     await service.Update(id, updateTask);
 
-    return Results.NoContent();
+    return Results.Created($"/todo/{task._id}", task);
   });
 
   app.MapDelete("/api/tasks/{id}", async (TodoService service, string id) =>
@@ -92,6 +97,6 @@ void ConfigureApp(WebApplication app)
 
     await service.Delete(id);
 
-    return Results.NotFound();
+    return Results.Created($"/todo/{task._id}", task);
   });
 }
