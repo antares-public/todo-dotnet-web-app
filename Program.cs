@@ -1,8 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
 
-        // var playlistCollection = mongoClient.GetDatabase(options.Value.DatabaseName)
-
-
 builder.Services.AddCors(options =>
 {
   options.AddPolicy("MyCorsPolicy",
